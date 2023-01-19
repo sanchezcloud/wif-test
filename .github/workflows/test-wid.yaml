@@ -2,7 +2,7 @@ name: TEST_WID
 on:
   workflow_dispatch:
     branches:
-      - prod
+      - hacker
 
 jobs:
   build:
