@@ -1,0 +1,41 @@
+name: TEST_WID
+on:
+  workflow_dispatch:
+    branches:
+      - prod
+
+env:
+  ENVIRONMENT: staging
+  GCP_PROJECT: dl-cast-staging
+  REGION: us-west1
+  GKE_CLUSTER: us-west1-application
+
+jobs:
+  build:
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    environment: prod
+    name: testing
+    runs-on:
+      - ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - id: auth
+        uses: google-github-actions/auth@v1.0.0
+        with:
+          workload_identity_provider: "//iam.googleapis.com/projects/1066596012490/locations/global/workloadIdentityPools/github-wif"
+          service_account: "gha-wif@my-testing-project-2023.iam.gserviceaccount.com"
+          project_id: "my-testing-project-2023"
+          audience: "github-audience"
+      
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v1'
+
+      - name: 'Use gcloud CLI'
+        run: 'gcloud secrets versions access latest --secret=my-super-secret'
